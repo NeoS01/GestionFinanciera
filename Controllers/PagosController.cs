@@ -118,7 +118,7 @@ namespace GestionFinanciera.Controllers
             {
                 Codigo = codigo,
                 Id_Factura = factura.Id,
-                FechaPago = fechaPago,
+                FechaPago = DateTime.SpecifyKind(fechaPago, DateTimeKind.Utc),
                 Monto = monto,
                 MetodoPago = metodoPago,
                 ReferenciaBancaria = referenciaBancaria,

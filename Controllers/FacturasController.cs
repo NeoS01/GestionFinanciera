@@ -73,8 +73,8 @@ namespace GestionFinanciera.Controllers
             {
                 Codigo = codigo,
                 CodigoPaciente = codigoPaciente,
-                FechaEmision = fechaEmision,
-                FechaVencimiento = fechaVencimiento,
+                FechaEmision = DateTime.SpecifyKind(fechaEmision, DateTimeKind.Utc),
+                FechaVencimiento = DateTime.SpecifyKind(fechaVencimiento, DateTimeKind.Utc),
                 MontoTotal = montoTotal,
                 MontoCobertura = montoCobertura,
                 MontoPaciente = montoPaciente,

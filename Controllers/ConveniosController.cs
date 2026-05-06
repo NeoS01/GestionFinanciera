@@ -62,8 +62,8 @@ namespace GestionFinanciera.Controllers
                 NombreAseguradora = nombreAseguradora,
                 TipoCobertura = tipoCobertura,
                 PorcentajeCoberturaBase = porcentajeCoberturaBase,
-                FechaInicio = fechaInicio,
-                FechaFin = fechaFin,
+                FechaInicio = DateTime.SpecifyKind(fechaInicio, DateTimeKind.Utc),
+                FechaFin = DateTime.SpecifyKind(fechaFin, DateTimeKind.Utc),
                 Estado = "Activo"
             };
 
@@ -92,8 +92,8 @@ namespace GestionFinanciera.Controllers
             convenio.NombreAseguradora = nombreAseguradora;
             convenio.TipoCobertura = tipoCobertura;
             convenio.PorcentajeCoberturaBase = porcentajeCoberturaBase;
-            convenio.FechaInicio = fechaInicio;
-            convenio.FechaFin = fechaFin;
+            convenio.FechaInicio = DateTime.SpecifyKind(fechaInicio, DateTimeKind.Utc);
+            convenio.FechaFin = DateTime.SpecifyKind(fechaFin, DateTimeKind.Utc);
 
             await _context.SaveChangesAsync();
             return Ok(new { mensaje = $"Convenio '{codigo}' actualizado." });
