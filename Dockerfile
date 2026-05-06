@@ -1,20 +1,20 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /app
 
-# Copia los archivos del proyecto
-COPY *.sln .
-COPY GestionFinanciera/*.csproj ./GestionFinanciera/
+# Copia el archivo del proyecto
+COPY *.csproj ./
 RUN dotnet restore
 
+# Copia todo el código
 COPY . .
-WORKDIR /app/GestionFinanciera
+
+# Publica la aplicación
 RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/GestionFinanciera/out .
+COPY --from=build /app/out .
 
-# Render espera el puerto 8080 por defecto [citation:4]
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
