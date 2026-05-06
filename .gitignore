@@ -1,0 +1,27 @@
+# Binarios de compilación
+bin/
+obj/
+out/
+*.user
+*.userosscache
+*.suo
+
+# Archivos de Visual Studio
+.vs/
+.vscode/
+
+# Archivos de usuario y caché
+*.csproj.user
+*.dbmdl
+
+# Archivos de publicación
+publish/
+
+# Archivos de base de datos local
+*.mdf
+*.ldf
+*.db
+
+# Archivos de log
+*.log
+*.logs
