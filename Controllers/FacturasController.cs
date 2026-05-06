@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using GestionFinanciera.Data;
 using GestionFinanciera.Dominio;
 using GestionFinanciera.DTO.Factura;
+using GestionFinanciera.Soporte;
 using Mapster;
 
 namespace GestionFinanciera.Controllers
@@ -46,12 +47,20 @@ namespace GestionFinanciera.Controllers
         public async Task<IActionResult> Create(
             string codigo,
             string codigoPaciente,
-            DateTime fechaEmision,
-            DateTime fechaVencimiento,
+            string fechaEmision,
+            string fechaVencimiento,
             decimal montoTotal,
             decimal montoCobertura,
             string? codigoConvenio = null)
         {
+            var parsedFechaEmision = DateParser.TryParse(fechaEmision);
+            var parsedFechaVencimiento = DateParser.TryParse(fechaVencimiento);
+
+            if (parsedFechaEmision is null)
+                return BadRequest($"Formato de fechaEmision no válido: '{fechaEmision}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+            if (parsedFechaVencimiento is null)
+                return BadRequest($"Formato de fechaVencimiento no válido: '{fechaVencimiento}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+
             bool existe = await _context.Factura.AnyAsync(f => f.Codigo == codigo);
             if (existe)
                 return BadRequest($"El código de factura '{codigo}' ya existe.");
@@ -73,8 +82,8 @@ namespace GestionFinanciera.Controllers
             {
                 Codigo = codigo,
                 CodigoPaciente = codigoPaciente,
-                FechaEmision = DateTime.SpecifyKind(fechaEmision, DateTimeKind.Utc),
-                FechaVencimiento = DateTime.SpecifyKind(fechaVencimiento, DateTimeKind.Utc),
+                FechaEmision = parsedFechaEmision.Value,
+                FechaVencimiento = parsedFechaVencimiento.Value,
                 MontoTotal = montoTotal,
                 MontoCobertura = montoCobertura,
                 MontoPaciente = montoPaciente,

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using GestionFinanciera.Data;
 using GestionFinanciera.Dominio;
 using GestionFinanciera.DTO.Pago;
+using GestionFinanciera.Soporte;
 using Mapster;
 
 namespace GestionFinanciera.Controllers
@@ -98,12 +99,16 @@ namespace GestionFinanciera.Controllers
         public async Task<IActionResult> Create(
             string codigo,
             string codigoFactura,
-            DateTime fechaPago,
+            string fechaPago,
             decimal monto,
             string metodoPago,
             string referenciaBancaria,
             string pagado)
         {
+            var parsedFechaPago = DateParser.TryParse(fechaPago);
+            if (parsedFechaPago is null)
+                return BadRequest($"Formato de fechaPago no válido: '{fechaPago}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+
             bool existeCodigo = await _context.Pago.AnyAsync(p => p.Codigo == codigo);
             if (existeCodigo)
                 return BadRequest($"El código de pago '{codigo}' ya existe.");
@@ -118,7 +123,7 @@ namespace GestionFinanciera.Controllers
             {
                 Codigo = codigo,
                 Id_Factura = factura.Id,
-                FechaPago = DateTime.SpecifyKind(fechaPago, DateTimeKind.Utc),
+                FechaPago = parsedFechaPago.Value,
                 Monto = monto,
                 MetodoPago = metodoPago,
                 ReferenciaBancaria = referenciaBancaria,

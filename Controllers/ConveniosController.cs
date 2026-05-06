@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using GestionFinanciera.Data;
 using GestionFinanciera.Dominio;
 using GestionFinanciera.DTO.Convenio;
+using GestionFinanciera.Soporte;
 using Mapster;
 
 namespace GestionFinanciera.Controllers
@@ -49,9 +50,17 @@ namespace GestionFinanciera.Controllers
             string nombreAseguradora,
             string tipoCobertura,
             decimal porcentajeCoberturaBase,
-            DateTime fechaInicio,
-            DateTime fechaFin)
+            string fechaInicio,
+            string fechaFin)
         {
+            var parsedFechaInicio = DateParser.TryParse(fechaInicio);
+            var parsedFechaFin = DateParser.TryParse(fechaFin);
+
+            if (parsedFechaInicio is null)
+                return BadRequest($"Formato de fechaInicio no válido: '{fechaInicio}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+            if (parsedFechaFin is null)
+                return BadRequest($"Formato de fechaFin no válido: '{fechaFin}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+
             bool existe = await _context.Convenio.AnyAsync(c => c.Codigo == codigo);
             if (existe)
                 return BadRequest($"El código '{codigo}' ya existe.");
@@ -62,8 +71,8 @@ namespace GestionFinanciera.Controllers
                 NombreAseguradora = nombreAseguradora,
                 TipoCobertura = tipoCobertura,
                 PorcentajeCoberturaBase = porcentajeCoberturaBase,
-                FechaInicio = DateTime.SpecifyKind(fechaInicio, DateTimeKind.Utc),
-                FechaFin = DateTime.SpecifyKind(fechaFin, DateTimeKind.Utc),
+                FechaInicio = parsedFechaInicio.Value,
+                FechaFin = parsedFechaFin.Value,
                 Estado = "Activo"
             };
 
@@ -80,9 +89,17 @@ namespace GestionFinanciera.Controllers
             string nombreAseguradora,
             string tipoCobertura,
             decimal porcentajeCoberturaBase,
-            DateTime fechaInicio,
-            DateTime fechaFin)
+            string fechaInicio,
+            string fechaFin)
         {
+            var parsedFechaInicio = DateParser.TryParse(fechaInicio);
+            var parsedFechaFin = DateParser.TryParse(fechaFin);
+
+            if (parsedFechaInicio is null)
+                return BadRequest($"Formato de fechaInicio no válido: '{fechaInicio}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+            if (parsedFechaFin is null)
+                return BadRequest($"Formato de fechaFin no válido: '{fechaFin}'. Use dd-MM-yyyy o yyyy-MM-dd.");
+
             var convenio = await (from c in _context.Convenio
                                   where c.Codigo == codigo && c.Estado != "Inactivo"
                                   select c).FirstOrDefaultAsync();
@@ -92,8 +109,8 @@ namespace GestionFinanciera.Controllers
             convenio.NombreAseguradora = nombreAseguradora;
             convenio.TipoCobertura = tipoCobertura;
             convenio.PorcentajeCoberturaBase = porcentajeCoberturaBase;
-            convenio.FechaInicio = DateTime.SpecifyKind(fechaInicio, DateTimeKind.Utc);
-            convenio.FechaFin = DateTime.SpecifyKind(fechaFin, DateTimeKind.Utc);
+            convenio.FechaInicio = parsedFechaInicio.Value;
+            convenio.FechaFin = parsedFechaFin.Value;
 
             await _context.SaveChangesAsync();
             return Ok(new { mensaje = $"Convenio '{codigo}' actualizado." });
